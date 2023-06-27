@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
 import cv2
 import torch
-import kornia
+from kornia.geometry.transform import warp_perspective
 import torchvision.transforms as T
 from multiview_detector.utils import projection
 from multiview_detector.datasets import *
@@ -16,9 +16,9 @@ if __name__ == '__main__':
         img = Image.open(f'/home/houyz/Data/Wildtrack/Image_subsets/C{cam + 1}/00000025.png')
         world_img = T.ToTensor()(img).unsqueeze(0)
         img_mask = torch.ones_like(world_img)
-        world_img = kornia.warp_perspective(world_img, dataset.world_from_img[[cam]], dataset.worldgrid_shape,
+        world_img = warp_perspective(world_img, dataset.world_from_img[[cam]], dataset.worldgrid_shape,
                                             align_corners=False)[0]
-        world_mask = kornia.warp_perspective(img_mask, dataset.world_from_img[[cam]], dataset.worldgrid_shape,
+        world_mask = warp_perspective(img_mask, dataset.world_from_img[[cam]], dataset.worldgrid_shape,
                                              align_corners=False)[0, 0].bool().numpy()
         world_img = np.array(T.ToPILImage()(world_img))
         world_mask_grid = np.zeros_like(world_mask, dtype=bool)
@@ -57,9 +57,9 @@ if __name__ == '__main__':
                                           (img_coord[0] < 1920) & (img_coord[1] < 1080))[0]]
         img = np.array(img)
         img[img_coord[1], img_coord[0]] = [0, 0, 255]
-        img_mask_conv1 = kornia.warp_perspective(world_mask_conv1, dataset.img_from_world[[cam]], dataset.img_shape,
+        img_mask_conv1 = warp_perspective(world_mask_conv1, dataset.img_from_world[[cam]], dataset.img_shape,
                                                  align_corners=False)[0, 0].bool().numpy()
-        img_mask_conv2 = kornia.warp_perspective(world_mask_conv2, dataset.img_from_world[[cam]], dataset.img_shape,
+        img_mask_conv2 = warp_perspective(world_mask_conv2, dataset.img_from_world[[cam]], dataset.img_shape,
                                                  align_corners=False)[0, 0].bool().numpy()
         img[img_mask_conv1] = [255, 192, 0]
         img[img_mask_conv2] = [0, 176, 80]

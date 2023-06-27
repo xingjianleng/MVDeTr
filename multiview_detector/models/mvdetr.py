@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 from torchvision.models import vgg11
 import torchvision.transforms as T
-import kornia
+from kornia.geometry.transform import warp_perspective
 from multiview_detector.models.resnet import resnet18
 from multiview_detector.utils.image_utils import img_color_denormalize, array2heatmap
 from multiview_detector.utils.projection import get_worldcoord_from_imgcoord_mat, project_2d_points
@@ -162,7 +162,7 @@ class MVDeTr(nn.Module):
 
         if visualize:
             denorm = img_color_denormalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-            proj_imgs = kornia.warp_perspective(T.Resize(self.Rimg_shape)(imgs), proj_mats.to(imgs.device),
+            proj_imgs = warp_perspective(T.Resize(self.Rimg_shape)(imgs), proj_mats.to(imgs.device),
                                                 self.Rworld_shape, align_corners=False). \
                 view(B, N, 3, self.Rworld_shape[0], self.Rworld_shape[1])
             for cam in range(N):
@@ -191,7 +191,7 @@ class MVDeTr(nn.Module):
 
         # world feat
         H, W = self.Rworld_shape
-        world_feat = kornia.warp_perspective(imgs_feat, proj_mats.to(imgs.device),
+        world_feat = warp_perspective(imgs_feat, proj_mats.to(imgs.device),
                                              self.Rworld_shape, align_corners=False).view(B, N, C, H, W)
         if visualize:
             for cam in range(N):

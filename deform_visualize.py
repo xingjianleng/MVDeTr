@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
 import cv2
 import torch
-import kornia
+from kornia.geometry.transform import warp_perspective
 import torchvision.transforms as T
 from multiview_detector.models.mvdetr import MVDeTr
 from multiview_detector.utils import projection
@@ -59,9 +59,9 @@ if __name__ == '__main__':
         img = pil_transform(denorm(imgs)[cam])
         world_img = T.ToTensor()(img).unsqueeze(0)
         img_mask = torch.ones_like(world_img)
-        world_img = kornia.warp_perspective(world_img, dataset.world_from_img[[cam]], dataset.worldgrid_shape,
+        world_img = warp_perspective(world_img, dataset.world_from_img[[cam]], dataset.worldgrid_shape,
                                             align_corners=False)[0]
-        world_mask = kornia.warp_perspective(img_mask, dataset.world_from_img[[cam]], dataset.worldgrid_shape,
+        world_mask = warp_perspective(img_mask, dataset.world_from_img[[cam]], dataset.worldgrid_shape,
                                              align_corners=False)[0, 0].bool().numpy()
         world_img = np.array(T.ToPILImage()(world_img))
         world_mask_grid = np.zeros_like(world_mask, dtype=bool)
@@ -119,11 +119,11 @@ if __name__ == '__main__':
                                           (img_coord[0] < 1920) & (img_coord[1] < 1080))[0]]
         img = np.array(img)
         img[img_coord[1], img_coord[0]] = [0, 0, 255]
-        img_mask_points1 = kornia.warp_perspective(world_mask_points1, dataset.img_from_world[[cam]],
+        img_mask_points1 = warp_perspective(world_mask_points1, dataset.img_from_world[[cam]],
                                                    dataset.img_shape, align_corners=False).squeeze()
-        img_mask_points2 = kornia.warp_perspective(world_mask_points2, dataset.img_from_world[[cam]],
+        img_mask_points2 = warp_perspective(world_mask_points2, dataset.img_from_world[[cam]],
                                                    dataset.img_shape, align_corners=False).squeeze()
-        img_mask_points_og = kornia.warp_perspective(world_mask_points_og, dataset.img_from_world[[cam]],
+        img_mask_points_og = warp_perspective(world_mask_points_og, dataset.img_from_world[[cam]],
                                                      dataset.img_shape, align_corners=False).squeeze()
 
         idx = img_mask_points1.bool()
