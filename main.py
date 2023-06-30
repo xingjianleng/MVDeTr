@@ -52,8 +52,12 @@ def main(args):
         base = Wildtrack(os.path.expanduser('~/Data/Wildtrack'))
     elif 'multiviewx' in args.dataset:
         base = MultiviewX(os.path.expanduser('~/Data/MultiviewX'))
+    elif 'carlax01' in args.dataset:
+        base = CarlaX(os.path.expanduser('~/Data/CarlaX/01'))
+    elif 'carlax02' in args.dataset:
+        base = CarlaX(os.path.expanduser('~/Data/CarlaX/02'))
     else:
-        raise Exception('must choose from [wildtrack, multiviewx]')
+        raise Exception('must choose from [wildtrack, multiviewx, carlax01, carla02]')
     train_set = frameDataset(base, train=True, world_reduce=args.world_reduce,
                              img_reduce=args.img_reduce, world_kernel_size=args.world_kernel_size,
                              img_kernel_size=args.img_kernel_size, semi_supervised=args.semi_supervised,
@@ -157,7 +161,7 @@ if __name__ == '__main__':
     parser.add_argument('--alpha', type=float, default=1.0, help='ratio for per view loss')
     parser.add_argument('--use_mse', type=str2bool, default=False)
     parser.add_argument('--arch', type=str, default='resnet18', choices=['vgg11', 'resnet18', 'mobilenet'])
-    parser.add_argument('-d', '--dataset', type=str, default='wildtrack', choices=['wildtrack', 'multiviewx'])
+    parser.add_argument('-d', '--dataset', type=str, default='wildtrack', choices=['wildtrack', 'multiviewx', 'carlax01', 'carlax02'])
     parser.add_argument('-j', '--num_workers', type=int, default=4)
     parser.add_argument('-b', '--batch_size', type=int, default=1, help='input batch size for training')
     parser.add_argument('--dropout', type=float, default=0.0)
