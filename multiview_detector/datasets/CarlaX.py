@@ -26,7 +26,7 @@ class CarlaX(VisionDataset):
         self.img_xy_from_ij_mat = np.array([[0, 1, 0], [1, 0, 0], [0, 0, 1]])
         # unit in meters
         self.worldcoord_unit = 1
-        self.worldcoord_from_worldgrid_mat = np.array([[0.025, 0, 0], [0, 0.025, 0], [0, 0, 1]])
+        self.worldcoord_from_worldgrid_mat = np.array([[0.025, 0, self.origin_x], [0, 0.025, self.origin_y], [0, 0, 1]])
         self.intrinsic_matrices, self.extrinsic_matrices = zip(
             *[self.get_intrinsic_extrinsic_matrix(cam) for cam in range(self.num_cam)])
 
